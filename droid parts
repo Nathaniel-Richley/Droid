@@ -1,0 +1,101 @@
+using System.IO;
+
+class Program
+{
+    private static string filePath = "droidpartslist.txt";
+
+    static void Main(string[] args)
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Welcome to the Droid Parts List App!");
+            Console.WriteLine("1. View Droid Parts List");
+            Console.WriteLine("2. Add Part");
+            Console.WriteLine("3. Delete Part");
+            Console.WriteLine("4. Exit");
+            Console.Write("Please select an option: ");
+
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    ViewPartsList();
+                    break;
+                case "2":
+                    AddPart();
+                    break;
+                case "3":
+                    DeletePart();
+                    break;
+                case "4":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice, please try again.");
+                    break;
+            }
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+    }
+
+    private static void ViewPartsList()
+    {
+        if (File.Exists(filePath))
+        {
+            Console.WriteLine("Droid Parts List:");
+            string[] parts = File.ReadAllLines(filePath);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {parts[i]}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("The droid parts list is empty.");
+        }
+    }
+
+    private static void AddPart()
+    {
+        Console.Write("Enter the name of the part to add: ");
+        string newPart = Console.ReadLine();
+        File.AppendAllText(filePath, newPart + Environment.NewLine);
+        Console.WriteLine($"Part '{newPart}' added to the list.");
+    }
+
+    private static void DeletePart()
+    {
+        if (File.Exists(filePath))
+        {
+            string[] parts = File.ReadAllLines(filePath);
+            if (parts.Length == 0)
+            {
+                Console.WriteLine("The droid parts list is empty.");
+                return;
+            }
+
+            Console.WriteLine("Select a part to delete:");
+            for (int i = 0; i < parts.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {parts[i]}");
+            }
+            Console.Write("Enter the number of the part to delete: ");
+            if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= parts.Length)
+            {
+                string partToDelete = parts[index - 1];
+                parts[index - 1] = null;
+                File.WriteAllLines(filePath, parts.Where(p => p != null));
+                Console.WriteLine($"Part '{partToDelete}' has been deleted.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid selection.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("The droid parts list is empty.");
+        }
+    }
+}
